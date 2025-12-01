@@ -216,9 +216,10 @@ struct Person {
 };
 
 Person* getFriend(int person_index, std::vector<Person>& Journal) {
-    if (person_index >= 0 && person_index < Journal.size()) {
+    // Проверяем корректность индексов
+    if (person_index >= 0 && person_index < static_cast<int>(Journal.size())) {
         int friend_index = Journal[person_index].friend_index;
-        if (friend_index >= 0 && friend_index < Journal.size()) {
+        if (friend_index >= 0 && friend_index < static_cast<int>(Journal.size())) {
             return &Journal[friend_index];
         }
     }
@@ -229,7 +230,7 @@ void showallpeople(std::vector<Person>& Journal) {
     std::cout << "=== ВСЕ ЛЮДИ В ЖУРНАЛЕ ===" << std::endl;
     for (size_t i = 0; i < Journal.size(); ++i) {
         std::cout << i + 1 << ". " << Journal[i].name << " (" << Journal[i].age << " лет)";
-        Person* friend_ptr = getFriend(i, Journal);
+        Person* friend_ptr = getFriend(static_cast<int>(i), Journal);
         if (friend_ptr) {
             std::cout << " -> " << friend_ptr->name << " (" << friend_ptr->age << " лет)";
         } else {
@@ -257,12 +258,12 @@ void showverybestfriends(std::vector<Person>& Journal) {
     std::cout << "=== VERY BEST FRIENDS ===" << std::endl;
     bool found = false;
     for (size_t i = 0; i < Journal.size(); ++i) {
-        Person* friend_ptr = getFriend(i, Journal);
+        Person* friend_ptr = getFriend(static_cast<int>(i), Journal);
         if (friend_ptr) {
             int friend_index = Journal[i].friend_index;
-            if (friend_index >= 0 && friend_index < Journal.size()) {
-                if (Journal[friend_index].friend_index == i) {
-                    if (i < friend_index) {
+            if (friend_index >= 0 && friend_index < static_cast<int>(Journal.size())) {
+                if (Journal[friend_index].friend_index == static_cast<int>(i)) {
+                    if (static_cast<int>(i) < friend_index) {  // Чтобы не выводить пары дважды
                         std::cout << Journal[i].name << " (" << Journal[i].age << " лет) <-> " 
                                   << friend_ptr->name << " (" << friend_ptr->age << " лет)" << std::endl;
                         found = true;
@@ -285,7 +286,7 @@ void secret(std::vector<Person>& Journal) {
     int current_index = -1;
     for (size_t i = 0; i < Journal.size(); ++i) {
         if (Journal[i].name == name) {
-            current_index = i;
+            current_index = static_cast<int>(i);
             break;
         }
     }
@@ -296,6 +297,7 @@ void secret(std::vector<Person>& Journal) {
     }
     
     std::cout << "Цепочка секрета: ";
+    // Используем вектор вместо массива фиксированного размера
     std::vector<bool> visited(Journal.size(), false);
     int current = current_index;
     bool first = true;
@@ -309,7 +311,7 @@ void secret(std::vector<Person>& Journal) {
         first = false;
         
         int next_index = Journal[current].friend_index;
-        if (next_index != -1 && next_index < Journal.size() && !visited[next_index]) {
+        if (next_index != -1 && next_index < static_cast<int>(Journal.size()) && !visited[next_index]) {
             current = next_index;
         } else {
             current = -1;
@@ -381,7 +383,7 @@ void addNeWperson(std::vector<Person>& Journal) {
             for (size_t i = 0; i < Journal.size(); ++i) {
                 std::cout << i + 1 << ". " << Journal[i].name 
                           << " (" << Journal[i].age << " лет)";
-                Person* friend_ptr = getFriend(i, Journal);
+                Person* friend_ptr = getFriend(static_cast<int>(i), Journal);
                 if (friend_ptr) {
                     std::cout << " -> друг: " << friend_ptr->name;
                 } else {
@@ -399,7 +401,7 @@ void addNeWperson(std::vector<Person>& Journal) {
                 return;
             }
             
-            if (friend_choice < 1 || friend_choice > Journal.size()) {
+            if (friend_choice < 1 || friend_choice > static_cast<int>(Journal.size())) {
                 std::cout << "Неверный выбор! " << name << " будет добавлен как интроверт." << std::endl;
                 new_person.friend_index = -1;
             } else {
